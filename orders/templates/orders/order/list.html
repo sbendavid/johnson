@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Order List{% endblock %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        <h1>Order List</h1>
+    
+        {% for order in orders %}
+            <p>This is order <b><a href="{% url 'orders:order_detail' id=order.id %}">{{ order.id }}</a></b> for
+            {{ order.customer.user }}. The order was placed on: {{ order.created }} </p>
+        {% endfor %}
+    </div>
+
+{% endblock %}
