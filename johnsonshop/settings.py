@@ -86,10 +86,8 @@ WSGI_APPLICATION = 'johnsonshop.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'store_db',
-        'USER': 'johnson',
-        'PASSWORD': 'Password@1',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

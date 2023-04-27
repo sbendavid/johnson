@@ -1,7 +1,7 @@
 import random
 import decimal
 from datetime import datetime
-from django.db import models
+from django.db import models, csv
 from django.contrib.auth.models import User
 from django.core.management.base import BaseCommand, CommandError
 from faker import Faker
@@ -63,20 +63,25 @@ class Command(BaseCommand):
             )
             categories.append(category)
 
-        # create some products
-        products = []
-        for i in range(5):
-            product_name = fake.catch_phrase()
-            product_slug = slugify(product_name)  # generate slug from category name
-            if Product.objects.filter(slug=product_slug).exists():  # check if slug already exists, regenerate if needed
+        # Read data from CSV file
+        csv_file_path = 'data/'  # Update this with the path to your CSV file
+        with open(csv_file_path, newline='', encoding="utf8") as file:
+            reader = csv.reader(file, delimiter=",")
+            next(reader)
+            for row in reader:
+                # Extract data from CSV row
+                product_name = row[0]
                 product_slug = slugify(product_name)
-            product = Product.objects.create(
-                name=product_name,
-                slug=product_slug,  # set the generated slug for the category
-                price=int(decimal.Decimal(random.randrange(155, 899)) / 100),
-                category=random.choice(categories) # attach a random category to the product
-            )
-            products.append(product)
+                if Product.objects.filter(slug=product_slug).exists():
+                    product_slug = slugify(product_name)
+
+                # Create Product instance
+                products = Product.objects.create(
+                    name=product_name,
+                    slug=product_slug,
+                    price=int(decimal.Decimal(random.randrange(155, 899)) / 100),
+                    category=random.choice(categories)
+                )
 
         # create some carts
         products = list(Product.objects.all())

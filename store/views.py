@@ -1,7 +1,9 @@
 from django.shortcuts import render, get_object_or_404
+from django.db.models import Q
 from .models import Category, Product
 from cart.forms import CartAddProductForm
-from django.contrib.postgres.search import SearchVector
+# from django.contrib.postgres.search import SearchVector
+# from haystack.query import SearchQuerySet
 from store.forms import SearchForm
 
 # Create your views here.
@@ -39,18 +41,22 @@ def product_detail(request, id, slug):
 
 
 def product_search(request):
-    form = SearchForm()
-    query = None
-    results = []
-    if 'query' in request.GET:
-        form = SearchForm(request.GET)
-        if form.is_valid():
-            query = form.cleaned_data['query']
-            results = Product.objects.annotate(
-                search=SearchVector('name'),
-                ).filter(search=query)
-    return render(request,
-                    'store/product/search.html',
-                    {'form': form,
-                    'query': query,
-                    'results': results})
+    query = request.GET.get('query')
+    products = []
+
+    if query:
+        query_list = query.split()
+        q = Q()
+        for word in query_list:
+            q |= Q(name__icontains=word) | Q(description__icontains=word)
+        products = Product.objects.filter(q)
+
+    form = SearchForm(initial={'search_query': query})
+
+    context = {
+        'form': form,
+        'products': products,
+        'query': query,
+    }
+
+    return render(request, 'store/product/search.html', context)
