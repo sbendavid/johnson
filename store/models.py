@@ -48,5 +48,11 @@ class Product(models.Model):
     def __str__(self):
         return self.name
     
+    def get_slug(self):
+        return self.slug or str(self.id)
+    
     def get_absolute_url(self):
-        return reverse('store:product_detail', args=[self.id, self.slug])
+        if self.slug:
+            return reverse('store:product_detail', args=[self.id, self.slug])
+        else:
+            return reverse('store:product_detail', args=[self.id, self.get_slug()])
