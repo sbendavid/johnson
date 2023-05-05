@@ -72,6 +72,7 @@ class Command(BaseCommand):
             for row in reader:
                 # Extract data from CSV row
                 product_name = row[1]
+                product_img = row[14]
                 product_slug = slugify(product_name)
                 if Product.objects.filter(slug=product_slug).exists():
                     product_slug = slugify(product_name)
@@ -81,7 +82,8 @@ class Command(BaseCommand):
                     name=product_name,
                     slug=product_slug,
                     price=int(decimal.Decimal(random.randrange(155, 899)) / 100),
-                    category=random.choice(categories)
+                    category=random.choice(categories),
+                    image=product_img
                 )
 
         # create some carts

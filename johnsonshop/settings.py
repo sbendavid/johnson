@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'orders',
     'account',
     'customer',
+
+    'django_behave',
 ]
 
 MIDDLEWARE = [
